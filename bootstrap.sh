@@ -123,11 +123,18 @@ fi
 if [[ $HWMODEL == Raspberry* ]]; then
     wget -O /tmp/console-setup.zip https://github.com/kmpm/console-setup/archive/master.zip
     if [ ! -d $HOME/bin ]; then mkdir -p $HOME/bin; fi
-    unzip -nj /tmp/console-setup.zip console-setup-master/files/.tmux.conf 
-    unzip -nj /tmp/console-setup.zip console-setup-master/files/status.sh -d $HOME/bin
-    chmod +x $HOME/bin/status.sh
+    if [ ! -f $HOME/.tmux.conf ]; then 
+        unzip -nj /tmp/console-setup.zip console-setup-master/files/.tmux.conf $HOME 
+    fi
+    if [ ! -f $HOME/bin/status.sh ]; then
+        unzip -nj /tmp/console-setup.zip console-setup-master/files/status.sh -d $HOME/bin
+        chmod +x $HOME/bin/status.sh
+    fi
+    
+    if ! command -v argonone-config &> /dev/null ; then
+        echo "Install script for Argon One?"
+        if confirm ; then curl https://download.argon40.com/argon1.sh | bash fi
 fi
-
 
 # TODO: Raspberry Pi 4 only, check HWMODEL
 # if ! $(grep -q "dtoverlay=dwc2" /boot/config.txt); then
