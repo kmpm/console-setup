@@ -86,6 +86,13 @@ checkpkg() {
 }
 
 
+getfiles() {
+    if [ ! -f /tmp/console-setup.zip ]; then
+        wget -O /tmp/console-setup.zip https://github.com/kmpm/console-setup/archive/master.zip
+    fi
+}
+
+
 osdetect
 hwdetect
 echo OSDIST: $OSDIST, OSVERSION: $OSVERSION, OSWSL: $OSWSL OSRELEASE: $OSRELEASE
@@ -121,19 +128,21 @@ if [[ $OSDIST == ubuntu || $OSDIST == debian ]]; then
 fi
 
 if [[ $HWMODEL == Raspberry* ]]; then
-    wget -O /tmp/console-setup.zip https://github.com/kmpm/console-setup/archive/master.zip
     if [ ! -d $HOME/bin ]; then mkdir -p $HOME/bin; fi
-    if [ ! -f $HOME/.tmux.conf ]; then 
+    if [ ! -f $HOME/.tmux.conf ]; then
+	getfiles 
         unzip -nj /tmp/console-setup.zip console-setup-master/files/.tmux.conf $HOME 
     fi
     if [ ! -f $HOME/bin/status.sh ]; then
+	getfiles
         unzip -nj /tmp/console-setup.zip console-setup-master/files/status.sh -d $HOME/bin
         chmod +x $HOME/bin/status.sh
     fi
     
     if ! command -v argonone-config &> /dev/null ; then
         echo "Install script for Argon One?"
-        if confirm ; then curl https://download.argon40.com/argon1.sh | bash fi
+        if confirm ; then curl https://download.argon40.com/argon1.sh | bash; fi
+    fi
 fi
 
 # TODO: Raspberry Pi 4 only, check HWMODEL
